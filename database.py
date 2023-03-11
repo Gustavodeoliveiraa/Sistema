@@ -1,37 +1,23 @@
-import mysql.connector
+
+import sqlite3 as sq
 
 
-class Database:
+class Database():
+    def __init__(self):
+        self.conn = sq.connect("auto_ar")
+        self.cursor = self.conn.cursor()
 
-    def __init__(self, host='localhost', user='root',
-                 password='300423', database='auto_ar') -> None:
-
-        self.host = host
-        self.user = user
-        self.password = password
-        self.database = database
-
-    def connection(self):
-        self.connect = mysql.connector.connect(
-            host=self.host,
-            user=self.user,
-            password=self.password,
-            database=self.database,
-        )
-        self.cursor_ = self.connect.cursor()
-
-    def disconnect(self):
-        self.cursor_.close()
-
-    def Query(self, sql):
-        self.connection()
-        self.cursor_.execute(sql)
-        result = self.cursor_.fetchall()
-        self.disconnect()
+    def Query(self, msg) -> list:
+        self.cursor.execute(msg)
+        result = self.cursor.fetchall()
         return result
 
-    def manipulation(self, sql) -> None:
-        self.connection()
-        self.cursor_.execute(sql)
-        self.connect.commit()
-        self.disconnect()
+    def manipulation(self, sql):
+        self.cursor.execute(sql)
+        self.conn.commit()
+
+
+if __name__ == "__main__":
+    c = Database()
+    c.manipulation("CREATE TABLE IF NOT EXISTS teste (id integer, nome text);")
+    c.manipulation('INSERT INTO teste VALUES ("0", "ola");')

@@ -9,6 +9,7 @@ from estoque import Estoque
 from PyQt5.QtCore import QTimer, QTime
 from PyQt5.QtGui import QPixmap, QIcon
 
+
 buttonn_show_password = 0
 
 
@@ -22,9 +23,9 @@ class login(QWidget):
         self.login.register.clicked.connect(self.register_user)   
         self.login.show_password.clicked.connect(self.show_password)
         self.db = Database()
-        self.db.manipulation("CREATE DATABASE IF NOT EXISTS auto_ar")
+        # self.db.manipulation("CREATE DATABASE IF NOT EXISTS auto_ar")
         self.db.manipulation('CREATE TABLE IF NOT EXISTS credentials'
-                             '(usuario VARCHAR(30) NOT NULL, senha VARCHAR(60)'
+                             '(usuario text NOT NULL, senha text'
                              'NOT NULL);')
 
     def show_messege_register(self):
@@ -42,7 +43,7 @@ class login(QWidget):
         if event.buttons() == QtCore.Qt.LeftButton:
             self.move(self.pos() + event.globalPos() - self.dragPos)
             self.dragPos = event.globalPos()
-            event.accept() 
+            event.accept()
 
     def enter_storage(self):
         self.storage = storage()
@@ -122,7 +123,7 @@ class login(QWidget):
                     f' ("{self.user_input}", "{self.password_input}" )')
                 self.show_messege_register()
 
-    
+
 class storage(QMainWindow):
     def __init__(self, *args, **argv):
         super(storage, self).__init__(*args, **argv)
@@ -142,15 +143,15 @@ class storage(QMainWindow):
             )
         self.db = Database()
         self.db.manipulation(
-            'CREATE TABLE IF NOT EXISTS clientes '
-            '(cod INT PRIMARY KEY NOT NULL AUTO_INCREMENT, nome VARCHAR(30),'
-            ' carro VARCHAR(20), placa VARCHAR(10), numero VARCHAR(50) ); '
+            'CREATE TABLE IF NOT EXISTS clientes \
+            (cod INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, \
+             carro TEXT, placa TEXT, numero TEXT ); '
             )
 
         self.db.manipulation(
-            'CREATE TABLE IF NOT EXISTS produtos '
-            '(cod INT PRIMARY KEY NOT NULL AUTO_INCREMENT, '
-            'produto VARCHAR(50), quantidade VARCHAR(50) ); ')
+            'CREATE TABLE IF NOT EXISTS produtos \
+            (cod INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
+            produto TEXT, quantidade TEXT); ')
 
         self.storage.btn_cadastrar_cliente.clicked.connect(
             self.insert_bd_cliente
@@ -203,8 +204,8 @@ class storage(QMainWindow):
 
         self.db.manipulation(
             'CREATE TABLE IF NOT EXISTS produtos '
-            '(cod INT PRIMARY KEY NOT NULL AUTO_INCREMENT, produto'
-            ' VARCHAR(50), quantidade VARCHAR(50) ); '
+            '(cod INTEGER PRIMARY KEY AUTOINCREMENT, produto'
+            ' TEXT, quantidade TEXT); '
             )
         all = self.db.Query('SELECT * FROM produtos;')
         self.storage.table_estoque.clearContents()
@@ -226,8 +227,8 @@ class storage(QMainWindow):
                 all_product.append(item[0])
             if not product in all_product:
                 self.db.manipulation(
-                    f'INSERT INTO produtos (produto, quantidade) '
-                    f'VALUES ("{product}", "{amount}")')
+                    f'INSERT INTO produtos (produto, quantidade) VALUES ("{product}", "{amount}")'
+                    )
             self.table_storage()
         self.storage.insert_product.setPlaceholderText('Produto')
         self.storage.insert_quantidade.setPlaceholderText('Quantidade')
@@ -261,19 +262,22 @@ class storage(QMainWindow):
         self.storage.insert_quantidade.setPlaceholderText('Quantidade')
 
     def delete(self):
-        num = self.storage.table_estoque.currentRow() + 1
-        self.db.manipulation(f"DELETE FROM produtos WHERE cod = '{num}' ")
+        # num = self.storage.table_estoque.currentRow() + 1S
+        product = self.storage.insert_product.text()
+        amount = self.storage.insert_quantidade.text()
+        self.db.manipulation(f"DELETE FROM produtos WHERE produto = '{product}' AND quantidade = '{amount}'  ")
 
         all_items = self.db.Query("SELECT produto, quantidade FROM produtos;")
         self.db.manipulation('DROP TABLE produtos;')
         for cod, item in enumerate(all_items):
             self.db.manipulation(
                 'CREATE TABLE IF NOT EXISTS produtos '
-                '(cod INT PRIMARY KEY NOT NULL AUTO_INCREMENT, '
-                'produto VARCHAR(50), quantidade VARCHAR(50) ); '
+                '(cod INTEGER PRIMARY KEY AUTOINCREMENT, '
+                'produto TEXT, quantidade TEXT ); '
                 )
-            self.db.manipulation(f'INSERT INTO produtos (produto, quantidade) '
-                                 f'VALUES ("{item[0]}", "{item[1]}" ); ')
+            self.db.manipulation(f'INSERT INTO produtos (produto, quantidade) \
+                                  VALUES ("{item[0]}", "{item[1]}" ); ')
+
         self.storage.insert_product.clear()
         self.storage.insert_quantidade.clear()
         self.storage.insert_product.setPlaceholderText('Produto')
@@ -309,8 +313,8 @@ class storage(QMainWindow):
         number = self.storage.insert_numero.text()
         if len(name) and len(number) != 0:
             self.db.manipulation(
-                f'INSERT INTO clientes (nome, carro, placa, numero)VALUES'
-                f'("{name}", "{car}", "{plate}", "{number}") ')
+                f'INSERT INTO clientes (nome, carro, placa, numero) VALUES \
+                    ("{name}", "{car}", "{plate}", "{number}") ')
             self.table_client()
         self.default_placeholder_cliente()
         self.default_fields()
@@ -318,8 +322,8 @@ class storage(QMainWindow):
     def table_client(self):
         self.db.manipulation(
             'CREATE TABLE IF NOT EXISTS clientes'
-            '(cod INT PRIMARY KEY NOT NULL AUTO_INCREMENT, nome VARCHAR(30), '
-            'carro VARCHAR(20), placa VARCHAR(10), numero VARCHAR(50) ); '
+            '(cod INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, \
+                carro TEXT, placa TEXT, numero TEXT); '
             )
         all = self.db.Query('SELECT * FROM clientes;')
         self.storage.table_cliente.clearContents()
@@ -341,7 +345,7 @@ class storage(QMainWindow):
         return row_table
 
     def set_text_client(self):
-        row_table = self.storage.table_cliente.currentRow() 
+        row_table = self.storage.table_cliente.currentRow()
         all_names = self.db.Query(
             'SELECT nome, carro, placa, numero FROM clientes;'
             )
@@ -378,9 +382,9 @@ class storage(QMainWindow):
         for item in all_items:
             self.db.manipulation(
                 'CREATE TABLE IF NOT EXISTS clientes '
-                '(cod INT PRIMARY KEY NOT NULL AUTO_INCREMENT, '
-                'nome VARCHAR(30), carro VARCHAR(20), placa VARCHAR(10), '
-                'numero VARCHAR(50) ); '
+                '(cod INTEGER PRIMARY KEY AUTOINCREMENT, '
+                'nome TEXT, carro TEXT, placa TEXT, '
+                'numero TEXT); '
                 )
             self.db.manipulation(
                 f'INSERT INTO clientes (nome, carro, placa, numero) '
