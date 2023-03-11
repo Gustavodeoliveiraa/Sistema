@@ -1,6 +1,6 @@
 # StockPy - Gerenciador de estoque
 
-> Status: Finalizado ❌
+> Status: Em desenvolvimento
 
 ## Tecnologias:
 
