@@ -1,10 +1,13 @@
 
 import sqlite3 as sq
+import os
 
 
 class Database():
+
     def __init__(self):
-        self.conn = sq.connect("auto_ar")
+        USERNAME = os.getlogin()
+        self.conn = sq.connect(F"C:/Users/{USERNAME}/auto_ar")
         self.cursor = self.conn.cursor()
 
     def Query(self, msg) -> list:
@@ -12,7 +15,7 @@ class Database():
         result = self.cursor.fetchall()
         return result
 
-    def manipulation(self, sql):
+    def manipulation(self, sql): 
         self.cursor.execute(sql)
         self.conn.commit()
 
