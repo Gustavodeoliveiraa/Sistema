@@ -1,6 +1,7 @@
 venv/
 __pycache__/
 .mypy_cache/
+build/functions
 build
 dist
 functions.spec
